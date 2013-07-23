@@ -18,6 +18,9 @@
         <integer>00</integer>
     </dict>
 	
+	<key>UserName</key>
+	<string>sgarim1</string>
+	
 	<key>StandardErrorPath</key>
 	<string>/Users/sgarim1/Personal/shed_sotd/error.log</string>
 	<key>StandardOutPath</key>
