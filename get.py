@@ -62,8 +62,7 @@ def cleanFiles():
 if __name__ == '__main__':
     if len(sys.argv) == 1:
         getSotdImage()
-    elif len(sys.argv) == 2:
-        if sys.argv[1] == "clean":
+    elif len(sys.argv) == 2 and sys.argv[1] == "clean":
             cleanFiles()
     else:
         print("Usage: get.py [clean]")
