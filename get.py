@@ -1,34 +1,69 @@
+#!/usr/bin/python
 from bs4 import BeautifulSoup
 import urllib
 import shutil
+import sys
+import os
 from datetime import datetime
 
-def sotd_getter():
-    print('Starting the program ...')
+homeDir = "/Users/sgarim1/Personal/shed_sotd/"
+sotdUrl = "http://shed.chelseafc.com/shed_sotd.shtml"
+
+def getSotdImage():
+    currentTimestamp = datetime.now()
+    today = str(currentTimestamp.year) + "-" + str(currentTimestamp.month) + "-" + str(currentTimestamp.day)
+            
+    print(currentTimestamp)
+    print('Starting the program')
     
-    sotdUrl = "http://shed.chelseafc.com/shed_sotd.shtml"
     soup = BeautifulSoup(urllib.urlopen(sotdUrl).read())
-    print('Downloaded the page ...')
-    today = str(datetime.now().year) + "-" + str(datetime.now().month) + "-" + str(datetime.now().day)
+    print('Downloaded the page')
     
     # Putting an entry in the db
-    db = open('sotd_info.csv', 'a')
+    db = open(homeDir+'sotd_info.csv', 'a+')
     content = today + ","
     for div in soup.find_all('div'):
         if div.get('id') == 'box_sotd_text':
             content += div.contents[1]
     db.write(content + '\n')
     db.close()
-    print('An entry was made in the database ... ')
+    print('An entry was made in the database')
     
     # Downloading the image
     for img in soup.find_all('img'):
         if img.get('id') == 'sotdpic':
-            urllib.urlretrieve(img.get('src'), 'images/'+today +".jpg")
-    shutil.copy('images/'+today+".jpg", "today.jpg")
-    print('The image was successfully downloaded ...')
+            urllib.urlretrieve(img.get('src'), homeDir+'images/'+today +".jpg")
+    shutil.copy(homeDir+'images/'+today+".jpg", homeDir+"today.jpg")
+    print('The image was successfully downloaded and saved as images/'+today+'.jpg')
     
-    print('Finished running the program ...')
-    
+    print('Finished running the program\n')
+
+def removeFile(fileName):
+    try:
+        os.remove(fileName)
+    except OSError:
+        pass
+        
+def cleanFolder(folderPath):
+    try:
+        shutil.rmtree(folderPath)
+    except OSError:
+        pass
+    os.makedirs(folderPath)
+
+def cleanFiles():
+    removeFile(homeDir+'output.log')
+    removeFile(homeDir+'error.log')
+    removeFile(homeDir+'today.jpg')
+    removeFile(homeDir+'sotd_info.csv')
+    cleanFolder(homeDir+'images/')
+
+
 if __name__ == '__main__':
-    sotd_getter()
+    if len(sys.argv) == 1:
+        getSotdImage()
+    elif len(sys.argv) == 2:
+        if sys.argv[1] == "clean":
+            cleanFiles()
+    else:
+        print("Usage: get.py [clean]")
