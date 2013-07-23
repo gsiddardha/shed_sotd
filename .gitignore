@@ -3,3 +3,5 @@
 *.pyc
 .DS_Store
 images/*
+sotd_info.csv
+today.jpg
